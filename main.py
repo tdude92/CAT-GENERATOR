@@ -54,7 +54,7 @@ class Generator(nn.Module):
         super().__init__()
 
         self.pipeline = nn.Sequential(
-            nn.ConvTranspose2d(10, 512, kernel_size = 4, stride = 1, padding = 0, bias = False),
+            nn.ConvTranspose2d(100, 512, kernel_size = 4, stride = 1, padding = 0, bias = False),
             nn.BatchNorm2d(512),
             nn.ReLU(True),
 
@@ -75,7 +75,8 @@ class Generator(nn.Module):
         )
     
     def forward(self, x):
-        return self.pipeline(x.view(BATCH_SIZE, 1, 10, 10))
+        x = x.view(BATCH_SIZE, 1, 10, 10)
+        return self.pipeline(x)
 
 
 # Discriminator
@@ -146,7 +147,7 @@ for epoch in range(N_EPOCHS):
         D_x = output.mean().item()
 
         # Fake batch
-        z = torch.randn(BATCH_SIZE, 100, device = device)
+        z = torch.randn(BATCH_SIZE, 100, 1, device = device)
         fake_images = net_G.forward(z)
         label.fill_(0)
 
