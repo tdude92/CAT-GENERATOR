@@ -18,6 +18,15 @@ Model Architecture and Hyperparameters taken from: https://github.com/pytorch/ex
 ![Epoch 150](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch150/epoch_150_1.jpg?raw=true "Epoch 150")
 ![Epoch 200](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch206/epoch_206_2.jpg?raw=true "Epoch 200")
 
+![Epoch 235](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch235/epoch_235_2.jpg "Epoch 235")
+![Epoch 300](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch300/epoch_300_1.jpg "Epoch 300")
+![Epoch 300](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch300/epoch_300_3.jpg "Epoch 300")
+![Epoch 400](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch400/epoch_400_0.jpg "Epoch 400")
+![Epoch 400](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch400/epoch_400_1.jpg "Epoch 400")
+![Epoch 400](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch400/epoch_400_3.jpg "Epoch 400")
+![Epoch 500](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch500/epoch_500_0.jpg "Epoch 500")
+![Epoch 540](https://raw.githubusercontent.com/tdude92/CAT-GENERATOR/master/outputs/Epoch540/epoch_540_0.jpg "Epoch 540")
+
 
 ## Training:
 
