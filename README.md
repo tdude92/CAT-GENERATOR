@@ -19,6 +19,6 @@ Model Architecture and Hyperparameters taken from: https://github.com/pytorch/ex
 ## How to Train:
 
 Edit main.py and change the global variable MODEL_ID to a random number.\
-`python3 main.py` \
+`python3 main.py`
 
 Trained models can be found in the *models/* directory (generator_1.py)
