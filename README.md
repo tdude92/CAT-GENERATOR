@@ -14,6 +14,9 @@ Model Architecture and Hyperparameters taken from: https://github.com/pytorch/ex
 ![Epoch 70](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch70/epoch_70_2.jpg?raw=true "Epoch 70")
 ![Epoch 80](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch80/epoch_80_0.jpg?raw=true "Epoch 80")
 ![Epoch 90](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch96/epoch_96_1.jpg?raw=true "Epoch 90")
+![Epoch 120](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch120/epoch_120_3.jpg?raw=true "Epoch 120")
+![Epoch 150](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch150/epoch_150_1.jpg?raw=true "Epoch 150")
+![Epoch 200](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch206/epoch_206_2.jpg?raw=true "Epoch 200")
 
 
 ## Training:
