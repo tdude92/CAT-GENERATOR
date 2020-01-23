@@ -11,6 +11,7 @@ import numpy as np
 MODEL_ID        = "0"
 DATA_PATH       = "data"
 
+START_EPOCH     = 41
 N_EPOCHS        = 100
 LEN_Z           = 100
 OUT_CHANNELS    = 3
@@ -132,7 +133,7 @@ criterion = nn.BCELoss()
 
 min_lossG = np.inf
 min_lossD = np.inf
-for epoch in range(N_EPOCHS):
+for epoch in range(START_EPOCH, N_EPOCHS):
     for images, label in data_loader:
         if ON_CUDA:
             images = images.cuda()
@@ -177,15 +178,8 @@ for epoch in range(N_EPOCHS):
     print("(1) D(G(z)) =", D_G_z1)
     print("(2) D(G(z)) =", D_G_z2)
 
-    if errG.item() < min_lossG:
-        print(f"!!!: Generator Loss Decreased ({min_lossG} --> {errG.item()}). Saving...")
-        torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + ".pth")
-        min_lossG = errG.item()
-    if errD.item() < min_lossD:
-        print(f"!!!: Discriminator Loss Decreased ({min_lossD} --> {errD.item()}). Saving...")
-        torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + ".pth")
-        min_lossD = errD.item()
-    print()
+    torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + ".pth")
+    torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + ".pth")
 
     # Save some Generator outputs to track progress visually.
     os.makedirs("outputs/Epoch" + str(epoch), exist_ok = True)
