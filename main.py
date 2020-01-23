@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 
 # Constants
-MODEL_ID        = "1"
+MODEL_ID        = "0"
 DATA_PATH       = "data"
 
 N_EPOCHS        = 100
@@ -192,4 +192,4 @@ for epoch in range(N_EPOCHS):
     for i in range(4):
         img = fake_images[i].cpu().detach().numpy().transpose(1, 2, 0) * 255
         cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    cv2.imwrite("outputs/Epoch" + str(epoch) + "/" + "epoch_" + str(epoch) + "_" + str(i) + ".jpg", img)
+        cv2.imwrite("outputs/Epoch" + str(epoch) + "/" + "epoch_" + str(epoch) + "_" + str(i) + ".jpg", img)
