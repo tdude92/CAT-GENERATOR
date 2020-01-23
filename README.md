@@ -16,8 +16,9 @@ Model Architecture and Hyperparameters taken from: https://github.com/pytorch/ex
 ![Epoch 90](https://github.com/tdude92/CAT-GENERATOR/blob/master/outputs/Epoch96/epoch_96_1.jpg?raw=true "Epoch 90")
 
 
-## How to Train:
+## Training:
 
+If you want to try training a Cat Generator by yourself:\
 Edit main.py and change the global variable MODEL_ID to a random number.\
 `python3 main.py`
 
