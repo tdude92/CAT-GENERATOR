@@ -8,11 +8,11 @@ import cv2
 import numpy as np
 
 # Constants
-MODEL_ID        = "0"
+MODEL_ID        = "1"
 DATA_PATH       = "data"
 
-START_EPOCH     = 41
-N_EPOCHS        = 100
+START_EPOCH     = 1
+N_EPOCHS        = 10000
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
@@ -32,7 +32,7 @@ else:
 
 # Transformations on training data.
 transform = transforms.Compose([
-    transforms.Resize(IMAGE_DIM + 2),
+    transforms.Resize(IMAGE_DIM),
     transforms.CenterCrop(IMAGE_DIM),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
