@@ -1,6 +1,6 @@
 # CAT GENERATOR
 
-Dataset used: https://www.kaggle.com/spandan2/cats-faces-64x64-for-generative-models
+Dataset used: https://www.kaggle.com/spandan2/cats-faces-64x64-for-generative-models \
 Model Architecture and Hyperparameters taken from: https://github.com/pytorch/examples/tree/master/dcgan
 
 
