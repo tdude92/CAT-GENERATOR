@@ -5,7 +5,7 @@ from torchvision import datasets, transforms
 import os
 import math
 import cv2
-import numpy
+import numpy as np
 
 # Constants
 MODEL_ID        = "1"
@@ -75,7 +75,6 @@ class Generator(nn.Module):
         )
     
     def forward(self, x):
-        x = x.view(BATCH_SIZE, 1, 10, 10)
         return self.pipeline(x)
 
 
@@ -131,6 +130,8 @@ optim_D = torch.optim.Adam(net_D.parameters(), lr = LEARN_RATE, betas = (ADAM_BE
 criterion = nn.BCELoss()
 
 
+min_lossG = np.inf
+min_lossD = np.inf
 for epoch in range(N_EPOCHS):
     for images, label in data_loader:
         if ON_CUDA:
@@ -147,7 +148,7 @@ for epoch in range(N_EPOCHS):
         D_x = output.mean().item()
 
         # Fake batch
-        z = torch.randn(BATCH_SIZE, 100, 1, device = device)
+        z = torch.randn(BATCH_SIZE, 100, 1, 1, device = device)
         fake_images = net_G.forward(z)
         label.fill_(0)
 
@@ -170,20 +171,20 @@ for epoch in range(N_EPOCHS):
 
     print("Epoch", epoch)
     print("--------------------")
-    print("Generator Loss:", errorG.item())
-    print("Discriminator Loss:", errorD.item())
+    print("Generator Loss:", errG.item())
+    print("Discriminator Loss:", errD.item())
     print("D(x) =", D_x)
     print("(1) D(G(z)) =", D_G_z1)
     print("(2) D(G(z)) =", D_G_z2)
 
-    if errorG.item() < min_lossG:
-        print(f"!!!: Generator Loss Decreased ({min_lossG} --> {errorG.item()}). Saving...")
-        torch.save(generator_net.state_dict(), "models/generator" + SAVE_MODEL_ID + ".pt")
-        min_lossG = errorG.item()
-    if errorD.item() < min_lossD:
-        print(f"!!!: Discriminator Loss Decreased ({min_lossD} --> {errorD.item()}). Saving...")
-        torch.save(discriminator_net.state_dict(), "models/discriminator" + SAVE_MODEL_ID + ".pt")
-        min_lossD = errorD.item()
+    if errG.item() < min_lossG:
+        print(f"!!!: Generator Loss Decreased ({min_lossG} --> {errG.item()}). Saving...")
+        torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + ".pth")
+        min_lossG = errG.item()
+    if errD.item() < min_lossD:
+        print(f"!!!: Discriminator Loss Decreased ({min_lossD} --> {errD.item()}). Saving...")
+        torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + ".pth")
+        min_lossD = errD.item()
     print()
 
     # Save some Generator outputs to track progress visually.
