@@ -13,11 +13,13 @@ DATA_PATH       = "data"
 
 START_EPOCH     = 0
 N_EPOCHS        = 50
+N_CRITIC        = 5
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
 BATCH_SIZE      = 64
 LEARN_RATE      = 0.00005
+CLIP_VALUE      = 0.01
 ON_CUDA         = torch.cuda.is_available()
 
 
@@ -46,23 +48,6 @@ transform = transforms.Compose([
 # Load data
 real_data = datasets.ImageFolder(DATA_PATH, transform = transform)
 data_loader = torch.utils.data.DataLoader(real_data, batch_size = BATCH_SIZE, shuffle = True, drop_last = True)
-
-
-# Wasserstein loss function
-def wasserstein(prediction, label):
-    return torch.mean(prediction * label)
-
-
-# Weight clipper (Wasserstein critic weights should be between -0.01 and 0.01)
-class WeightConstraint(object):
-    def __init__(self, constraint):
-        self.constraint = constraint
-    
-    def __call__(self, module):
-        if hasattr(module, "weight"):
-            print("clipped")
-            module.weight.data = module.weight.data.clamp(-constraint, constraint)
-
 
 # Generator
 class Generator(nn.Module):
@@ -126,7 +111,6 @@ class Discriminator(nn.Module):
 
 net_G = Generator()
 net_D = Discriminator()
-clipper = WeightConstraint(0.01)
 
 # Load models if specified.
 try:
@@ -147,7 +131,7 @@ optim_D = torch.optim.RMSprop(net_D.parameters(), lr = LEARN_RATE)
 min_lossG = np.inf
 min_lossD = np.inf
 for epoch in range(START_EPOCH, N_EPOCHS):
-    for images, label in data_loader:
+    for batch_n, (images, label) in enumerate(data_loader):
         if ON_CUDA:
             images = images.cuda()
         
@@ -155,49 +139,26 @@ for epoch in range(START_EPOCH, N_EPOCHS):
         z = torch.randn(BATCH_SIZE, 100, 1, 1, device = device)
         fake_images = net_G.forward(z)
 
-        for _ in range(5):
-            net_D.zero_grad()
+        optim_D.zero_grad()
 
-            # Real batch.
-            output = net_D.forward(images)
-            D_x = output.mean().item()
+        errD = -torch.mean(net_D(images)) + torch.mean(net_D(fake_images.detach()))
+        errD.backward()
+        optim_D.step()
 
-            errD_real = wasserstein(output, 1)
-            errD_real.backward()
+        for module in net_D.parameters():
+            module.data.clamp_(-CLIP_VALUE, CLIP_VALUE)
 
-            # Fake batch.
-            output = net_D.forward(fake_images.detach())
-            D_G_z1 = output.mean().item()
+        if batch_n % N_CRITIC == 0:
+            optim_G.zero_grad()
 
-            errD_fake = wasserstein(output, -1)
-            errD_fake.backward()
-
-            optim_D.step()
-
-            # Constrain critic weights.
-            for module in net_D.modules():
-                clipper(module)
-
-            errD = errD_real - errD_fake
-        
-        # Train Generator.
-        net_G.zero_grad()
-        output = net_D.forward(fake_images)
-
-        errG = wasserstein(output, -1)
-        errG.backward()
-
-        optim_G.step()
-
-        D_G_z2 = output.mean().item()
+            errG = -torch.mean(net_D(fake_images))
+            errG.backward()
+            optim_G.step()
 
     print("Epoch", epoch)
     print("--------------------")
     print("Generator Loss:", errG.item())
     print("Critic Loss:", errD.item())
-    print("D(x) =", D_x)
-    print("(1) D(G(z)) =", D_G_z1)
-    print("(2) D(G(z)) =", D_G_z2)
 
     torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + ".pth")
     torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + ".pth")
