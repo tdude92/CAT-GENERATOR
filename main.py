@@ -8,17 +8,16 @@ import cv2
 import numpy as np
 
 # Constants
-MODEL_ID        = "1"
+MODEL_ID        = "wgan_0"
 DATA_PATH       = "data"
 
-START_EPOCH     = 1
-N_EPOCHS        = 10000
+START_EPOCH     = 0
+N_EPOCHS        = 50
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
-BATCH_SIZE      = 128
-LEARN_RATE      = 0.0002
-ADAM_BETA_1     = 0.5
+BATCH_SIZE      = 64
+LEARN_RATE      = 0.00005
 ON_CUDA         = torch.cuda.is_available()
 
 
@@ -47,6 +46,11 @@ transform = transforms.Compose([
 # Load data
 real_data = datasets.ImageFolder(DATA_PATH, transform = transform)
 data_loader = torch.utils.data.DataLoader(real_data, batch_size = BATCH_SIZE, shuffle = True, drop_last = True)
+
+
+# Wasserstein loss function
+def wasserstein(prediction, label):
+    return torch.mean(prediction * label)
 
 
 # Generator
@@ -101,8 +105,7 @@ class Discriminator(nn.Module):
             nn.BatchNorm2d(512),
             nn.LeakyReLU(0.2, inplace = True),
 
-            nn.Conv2d(512, 1, kernel_size = 4, stride = 1, padding = 0, bias = False),
-            nn.Sigmoid()
+            nn.Conv2d(512, 1, kernel_size = 4, stride = 1, padding = 0, bias = False)
         )
 
     def forward(self, x):
@@ -125,10 +128,8 @@ if ON_CUDA:
     net_G.cuda()
     net_D.cuda()
 
-optim_G = torch.optim.Adam(net_G.parameters(), lr = LEARN_RATE, betas = (ADAM_BETA_1, 0.999))
-optim_D = torch.optim.Adam(net_D.parameters(), lr = LEARN_RATE, betas = (ADAM_BETA_1, 0.999))
-
-criterion = nn.BCELoss()
+optim_G = torch.optim.RMSprop(net_G.parameters(), lr = LEARN_RATE)
+optim_D = torch.optim.RMSprop(net_D.parameters(), lr = LEARN_RATE)
 
 
 min_lossG = np.inf
@@ -138,42 +139,45 @@ for epoch in range(START_EPOCH, N_EPOCHS):
         if ON_CUDA:
             images = images.cuda()
         
-        # Train Discriminator
-        # Train with real data
-        net_D.zero_grad()
-        output = net_D.forward(images).view(-1)
-        label = torch.full((BATCH_SIZE,), 1, device = device)
-
-        errD_real = criterion(output, label)
-        errD_real.backward()
-        D_x = output.mean().item()
-
-        # Fake batch
+        # Generate fake batch.
         z = torch.randn(BATCH_SIZE, 100, 1, 1, device = device)
         fake_images = net_G.forward(z)
-        label.fill_(0)
 
-        output = net_D.forward(fake_images.detach()).view(-1)
-        errD_fake = criterion(output, label)
-        errD_fake.backward()
-        D_G_z1 = output.mean().item()
+        for _ in range(5):
+            net_D.zero_grad()
 
-        errD = errD_fake + errD_real
-        optim_D.step()
+            # Real batch.
+            output = net_D.forward(images)
+            D_x = output.mean().item()
 
-        # Train generator
+            errD_real = wasserstein(output, 1)
+            errD_real.backward()
+
+            # Fake batch.
+            output = net_D.forward(fake_images.detach())
+            D_G_z1 = output.mean().item()
+
+            errD_fake = wasserstein(output, -1)
+            errD_fake.backward()
+
+            optim_D.step()
+            errD = errD_real - errD_fake
+        
+        # Train Generator.
         net_G.zero_grad()
-        label.fill_(1)
         output = net_D.forward(fake_images)
-        errG = criterion(output, label)
+
+        errG = wasserstein(output, -1)
         errG.backward()
-        D_G_z2 = output.mean().item()
+
         optim_G.step()
+
+        D_G_z2 = output.mean().item()
 
     print("Epoch", epoch)
     print("--------------------")
     print("Generator Loss:", errG.item())
-    print("Discriminator Loss:", errD.item())
+    print("Critic Loss:", errD.item())
     print("D(x) =", D_x)
     print("(1) D(G(z)) =", D_G_z1)
     print("(2) D(G(z)) =", D_G_z2)
