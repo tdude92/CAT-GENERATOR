@@ -11,8 +11,8 @@ import numpy as np
 MODEL_ID        = "1"
 DATA_PATH       = "data"
 
-START_EPOCH     = 1
-N_EPOCHS        = 10000
+START_EPOCH     = 41
+N_EPOCHS        = 200
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
@@ -134,7 +134,7 @@ criterion = nn.BCELoss()
 
 min_lossG = np.inf
 min_lossD = np.inf
-for epoch in range(START_EPOCH, N_EPOCHS):
+for epoch in range(START_EPOCH, N_EPOCHS + 1):
     for images, label in data_loader:
         if ON_CUDA:
             images = images.cuda()
