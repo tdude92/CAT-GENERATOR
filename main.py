@@ -60,8 +60,7 @@ class WeightConstraint(object):
     
     def __call__(self, module):
         if hasattr(module, "weight"):
-            print("clipped")
-            module.weight.data = module.weight.data.clamp(-constraint, constraint)
+            module.weight.data = module.weight.data.clamp(-self.constraint, self.constraint)
 
 
 # Generator
