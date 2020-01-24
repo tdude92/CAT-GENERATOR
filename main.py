@@ -49,6 +49,25 @@ transform = transforms.Compose([
 real_data = datasets.ImageFolder(DATA_PATH, transform = transform)
 data_loader = torch.utils.data.DataLoader(real_data, batch_size = BATCH_SIZE, shuffle = True, drop_last = True)
 
+<<<<<<< HEAD
+=======
+
+# Wasserstein loss function
+def wasserstein(prediction, label):
+    return torch.mean(prediction * label)
+
+
+# Weight clipper (Wasserstein critic weights should be between -0.01 and 0.01)
+class WeightConstraint(object):
+    def __init__(self, constraint):
+        self.constraint = constraint
+    
+    def __call__(self, module):
+        if hasattr(module, "weight"):
+            module.weight.data = module.weight.data.clamp(-self.constraint, self.constraint)
+
+
+>>>>>>> 77bcb897f21aafb07cabbecb5c3f01546d62138a
 # Generator
 class Generator(nn.Module):
     def __init__(self):
