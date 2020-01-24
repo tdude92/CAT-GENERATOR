@@ -17,7 +17,8 @@ LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
 BATCH_SIZE      = 128
-LEARN_RATE      = 0.0002
+LEARN_RATE_D    = 0.00005
+LEARN_RATE_G    = 0.0002
 ADAM_BETA_1     = 0.5
 ON_CUDA         = torch.cuda.is_available()
 
@@ -125,8 +126,8 @@ if ON_CUDA:
     net_G.cuda()
     net_D.cuda()
 
-optim_G = torch.optim.Adam(net_G.parameters(), lr = LEARN_RATE, betas = (ADAM_BETA_1, 0.999))
-optim_D = torch.optim.Adam(net_D.parameters(), lr = LEARN_RATE, betas = (ADAM_BETA_1, 0.999))
+optim_G = torch.optim.Adam(net_G.parameters(), lr = LEARN_RATE_G, betas = (ADAM_BETA_1, 0.999))
+optim_D = torch.optim.Adam(net_D.parameters(), lr = LEARN_RATE_D, betas = (ADAM_BETA_1, 0.999))
 
 criterion = nn.BCELoss()
 
