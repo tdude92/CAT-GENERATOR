@@ -53,6 +53,17 @@ def wasserstein(prediction, label):
     return torch.mean(prediction * label)
 
 
+# Weight clipper (Wasserstein critic weights should be between -0.01 and 0.01)
+class WeightConstraint(object):
+    def __init__(self, constraint):
+        self.constraint = constraint
+    
+    def __call__(self, module):
+        if hasattr(module, "weight"):
+            print("clipped")
+            module.weight.data = module.weight.data.clamp(-constraint, constraint)
+
+
 # Generator
 class Generator(nn.Module):
     def __init__(self):
@@ -115,6 +126,7 @@ class Discriminator(nn.Module):
 
 net_G = Generator()
 net_D = Discriminator()
+clipper = WeightConstraint(0.01)
 
 # Load models if specified.
 try:
@@ -161,6 +173,11 @@ for epoch in range(START_EPOCH, N_EPOCHS):
             errD_fake.backward()
 
             optim_D.step()
+
+            # Constrain critic weights.
+            for module in net_D.modules():
+                clipper(module)
+
             errD = errD_real - errD_fake
         
         # Train Generator.
