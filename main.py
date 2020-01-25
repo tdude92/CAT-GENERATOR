@@ -58,19 +58,19 @@ class Generator(nn.Module):
         self.pipeline = nn.Sequential(
             nn.ConvTranspose2d(100, 512, kernel_size = 4, stride = 1, padding = 0, bias = False),
             nn.BatchNorm2d(512),
-            nn.LeakyReLU(0.2, inplace = True),
+            nn.ReLU(True),
 
             nn.ConvTranspose2d(512, 256, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.BatchNorm2d(256),
-            nn.LeakyReLU(inplace = True),
+            nn.ReLU(True),
 
             nn.ConvTranspose2d(256, 128, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.BatchNorm2d(128),
-            nn.LeakyReLU(0.2, inplace = True),
+            nn.ReLU(True),
 
             nn.ConvTranspose2d(128, 64, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.BatchNorm2d(64),
-            nn.LeakyReLU(0.2, inplace = True),
+            nn.ReLU(True),
 
             nn.ConvTranspose2d(64, 3, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.Tanh()
