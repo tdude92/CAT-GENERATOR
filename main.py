@@ -11,13 +11,13 @@ import numpy as np
 MODEL_ID        = "1"
 DATA_PATH       = "data"
 
-START_EPOCH     = 84
+START_EPOCH     = 1
 N_EPOCHS        = 1000
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
 BATCH_SIZE      = 128
-LEARN_RATE_D    = 0.00005
+LEARN_RATE_D    = 0.00004
 LEARN_RATE_G    = 0.0002
 ADAM_BETA_1     = 0.5
 ON_CUDA         = torch.cuda.is_available()
@@ -58,19 +58,19 @@ class Generator(nn.Module):
         self.pipeline = nn.Sequential(
             nn.ConvTranspose2d(100, 512, kernel_size = 4, stride = 1, padding = 0, bias = False),
             nn.BatchNorm2d(512),
-            nn.ReLU(True),
+            nn.LeakyReLU(0.2, inplace = True),
 
             nn.ConvTranspose2d(512, 256, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.BatchNorm2d(256),
-            nn.ReLU(True),
+            nn.LeakyReLU(inplace = True),
 
             nn.ConvTranspose2d(256, 128, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.BatchNorm2d(128),
-            nn.ReLU(True),
+            nn.LeakyReLU(0.2, inplace = True),
 
             nn.ConvTranspose2d(128, 64, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.BatchNorm2d(64),
-            nn.ReLU(True),
+            nn.LeakyReLU(0.2, inplace = True),
 
             nn.ConvTranspose2d(64, 3, kernel_size = 4, stride = 2, padding = 1, bias = False),
             nn.Tanh()
