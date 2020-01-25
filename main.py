@@ -11,8 +11,8 @@ import numpy as np
 MODEL_ID        = "wgan_0"
 DATA_PATH       = "data"
 
-START_EPOCH     = 50
-N_EPOCHS        = 1000
+START_EPOCH     = 1000
+N_EPOCHS        = 5000
 N_CRITIC        = 5
 LEN_Z           = 100
 OUT_CHANNELS    = 3
