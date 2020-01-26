@@ -117,7 +117,7 @@ def weight_init(module):
     class_name = module.__class__.__name__
     if class_name.find("Conv") != -1:
         module.weight.data.normal_(0.0, 0.02)
-    elif classname.find("BatchNorm") != -1:
+    elif class_name.find("BatchNorm") != -1:
         module.weight.data.normal_(1.0, 0.02)
         module.bias.data.fill_(0)
 
