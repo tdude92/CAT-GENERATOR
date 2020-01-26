@@ -11,13 +11,13 @@ import numpy as np
 MODEL_ID        = "0"
 DATA_PATH       = "data"
 
-START_EPOCH     = 361
+START_EPOCH     = 1
 N_EPOCHS        = 750
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
 BATCH_SIZE      = 128
-LEARN_RATE_D    = 0.000035
+LEARN_RATE_D    = 0.000025
 LEARN_RATE_G    = 0.0002
 ADAM_BETA_1     = 0.5
 ON_CUDA         = torch.cuda.is_available()
