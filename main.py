@@ -11,8 +11,8 @@ import numpy as np
 MODEL_ID        = "0"
 DATA_PATH       = "data"
 
-START_EPOCH     = 30
-N_EPOCHS        = 251
+START_EPOCH     = 361
+N_EPOCHS        = 750
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
