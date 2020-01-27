@@ -11,8 +11,8 @@ import numpy as np
 MODEL_ID        = "0"
 DATA_PATH       = "data"
 
-START_EPOCH     = 1
-N_EPOCHS        = 750
+START_EPOCH     = 101
+N_EPOCHS        = 2000
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
@@ -191,6 +191,13 @@ for epoch in range(START_EPOCH, N_EPOCHS + 1):
 
     torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + ".pth")
     torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + ".pth")
+
+    try:
+        if epoch % 100 == 0:
+            torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + "_e" + str(epoch) + ".pth")
+            torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + "_e" + str(epoch) + ".pth")
+    except:
+        pass
 
     # Save some Generator outputs to track progress visually.
     os.makedirs("outputs/Epoch" + str(epoch), exist_ok = True)
