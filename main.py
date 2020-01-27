@@ -8,17 +8,16 @@ import cv2
 import numpy as np
 
 # Constants
-MODEL_ID        = "0"
+MODEL_ID        = "1"
 DATA_PATH       = "data"
 
-START_EPOCH     = 101
-N_EPOCHS        = 2000
+START_EPOCH     = 1
+N_EPOCHS        = 10000
 LEN_Z           = 100
 OUT_CHANNELS    = 3
 IMAGE_DIM       = 64
 BATCH_SIZE      = 128
-LEARN_RATE_D    = 0.00005
-LEARN_RATE_G    = 0.0002
+LEARN_RATE      = 0.0002
 ADAM_BETA_1     = 0.5
 ON_CUDA         = torch.cuda.is_available()
 
@@ -111,16 +110,6 @@ class Discriminator(nn.Module):
         return output.view(-1)
 
 
-# Weight initialization function.
-# Initialize with a standard deviation of 0.02
-def weight_init(module):
-    class_name = module.__class__.__name__
-    if class_name.find("Conv") != -1:
-        module.weight.data.normal_(0.0, 0.02)
-    elif class_name.find("BatchNorm") != -1:
-        module.weight.data.normal_(1.0, 0.02)
-        module.bias.data.fill_(0)
-
 net_G = Generator()
 net_D = Discriminator()
 
@@ -129,8 +118,6 @@ try:
     net_G.load_state_dict(torch.load("models/generator_" + MODEL_ID + ".pth"))
     net_D.load_state_dict(torch.load("models/discriminator_" + MODEL_ID + ".pth"))
 except FileNotFoundError:
-    net_G.apply(weight_init)
-    net_D.apply(weight_init)
     torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + ".pth")
     torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + ".pth")
 
@@ -138,13 +125,15 @@ if ON_CUDA:
     net_G.cuda()
     net_D.cuda()
 
-optim_G = torch.optim.Adam(net_G.parameters(), lr = LEARN_RATE_G, betas = (ADAM_BETA_1, 0.999))
-optim_D = torch.optim.Adam(net_D.parameters(), lr = LEARN_RATE_D, betas = (ADAM_BETA_1, 0.999))
+optim_G = torch.optim.Adam(net_G.parameters(), lr = LEARN_RATE, betas = (ADAM_BETA_1, 0.999))
+optim_D = torch.optim.Adam(net_D.parameters(), lr = LEARN_RATE, betas = (ADAM_BETA_1, 0.999))
 
 criterion = nn.BCELoss()
 
 
-for epoch in range(START_EPOCH, N_EPOCHS + 1):
+min_lossG = np.inf
+min_lossD = np.inf
+for epoch in range(START_EPOCH, N_EPOCHS):
     for images, label in data_loader:
         if ON_CUDA:
             images = images.cuda()
@@ -192,16 +181,9 @@ for epoch in range(START_EPOCH, N_EPOCHS + 1):
     torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + ".pth")
     torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + ".pth")
 
-    try:
-        if epoch % 100 == 0:
-            torch.save(net_G.state_dict(), "models/generator_" + MODEL_ID + "_e" + str(epoch) + ".pth")
-            torch.save(net_D.state_dict(), "models/discriminator_" + MODEL_ID + "_e" + str(epoch) + ".pth")
-    except:
-        pass
-
     # Save some Generator outputs to track progress visually.
     os.makedirs("outputs/Epoch" + str(epoch), exist_ok = True)
     for i in range(4):
-        img = (fake_images[i].cpu().detach().numpy().transpose(1, 2, 0) + np.ones((64, 64, 3))) * 127.5
-        img = cv2.cvtColor(img.astype(np.float32), cv2.COLOR_RGB2BGR)
+        img = fake_images[i].cpu().detach().numpy().transpose(1, 2, 0) * 255
+        cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite("outputs/Epoch" + str(epoch) + "/" + "epoch_" + str(epoch) + "_" + str(i) + ".jpg", img)
