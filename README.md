@@ -35,4 +35,5 @@ If you want to try training a Cat Generator by yourself:\
 Edit main.py and change the global variable MODEL_ID to a random number.\
 `python3 main.py`
 
-Trained models can be found in the *models/* directory (generator_1.py)
+Trained models can be found in the *models/* directory.\
+The best model seems to be generator_0_e800.pth
