@@ -195,6 +195,6 @@ for epoch in range(START_EPOCH, N_EPOCHS + 1):
     # Save some Generator outputs to track progress visually.
     os.makedirs("outputs/Epoch" + str(epoch), exist_ok = True)
     for i in range(4):
-        img = (fake_images[i].cpu().detach().numpy().transpose(1, 2, 0) + np.ones(64, 64, 3)) * 127.5
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        img = (fake_images[i].cpu().detach().numpy().transpose(1, 2, 0) + np.ones((64, 64, 3))) * 127.5
+        img = cv2.cvtColor(img.astype(np.float32), cv2.COLOR_RGB2BGR)
         cv2.imwrite("outputs/Epoch" + str(epoch) + "/" + "epoch_" + str(epoch) + "_" + str(i) + ".jpg", img)
